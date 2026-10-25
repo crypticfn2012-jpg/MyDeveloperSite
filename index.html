@@ -1,0 +1,402 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ron | Game Developer</title>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+        :root {
+            --bg: #080b10;
+            --panel: rgba(17, 22, 31, 0.86);
+            --line: rgba(255, 255, 255, 0.09);
+            --text: #f3f6fb;
+            --muted: #9aa6b8;
+            --accent: #a3ff6f;
+            --accent-2: #71e6d1;
+        }
+
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; scroll-padding-top: 24px; }
+        body {
+            margin: 0; min-height: 100vh; overflow-x: hidden;
+            background: var(--bg); color: var(--text);
+            font-family: 'DM Sans', Arial, sans-serif; line-height: 1.6;
+        }
+
+        .ambient-background {
+            position: fixed; inset: 0; z-index: -2; overflow: hidden; pointer-events: none;
+            background:
+                radial-gradient(ellipse at 15% 15%, rgba(91,141,255,.13), transparent 38%),
+                radial-gradient(ellipse at 85% 70%, rgba(118,255,142,.09), transparent 35%),
+                #080b10;
+        }
+        .ambient-background::before, .ambient-background::after {
+            content: ""; position: absolute; width: 48vw; height: 48vw;
+            min-width: 360px; min-height: 360px; border-radius: 50%;
+            filter: blur(90px); opacity: .28;
+            animation: float-glow 18s ease-in-out infinite alternate;
+        }
+        .ambient-background::before { top: -15%; left: -12%; background: rgba(82,124,255,.32); }
+        .ambient-background::after {
+            right: -14%; bottom: -22%; background: rgba(114,255,133,.22); animation-delay: -8s;
+        }
+        .background-grid {
+            position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: .16;
+            background-image: linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+            background-size: 54px 54px;
+            mask-image: linear-gradient(to bottom, black, transparent 88%);
+        }
+        @keyframes float-glow {
+            from { transform: translate3d(-3%,-2%,0) scale(.94); }
+            to { transform: translate3d(5%,6%,0) scale(1.08); }
+        }
+        @keyframes rise-in {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .site-shell { width: min(1440px, 100%); margin: 0 auto; padding: 0 32px; }
+        .header { padding: 54px 0 28px; text-align: left; animation: rise-in .7s ease both; }
+        .eyebrow {
+            display: inline-flex; align-items: center; gap: 9px; margin: 0 0 12px;
+            color: var(--accent); font-size: .76rem; font-weight: 700; letter-spacing: .16em;
+            text-transform: uppercase;
+        }
+        .status-dot {
+            width: 7px; height: 7px; border-radius: 50%; background: var(--accent);
+            box-shadow: 0 0 14px rgba(163,255,111,.75);
+        }
+        .header h1 {
+            margin: 0; font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(2.2rem, 5vw, 4rem); font-weight: 700;
+            letter-spacing: -.055em; line-height: 1.08;
+        }
+        .header h1 span { color: var(--accent); }
+        .header > p { max-width: 620px; margin: 16px 0 0; color: var(--muted); font-size: 1.05rem; }
+
+        .navigation {
+            display: flex; align-items: center; justify-content: space-between; gap: 18px;
+            margin-bottom: 32px; padding: 12px 15px; border: 1px solid var(--line);
+            border-radius: 14px; background: rgba(14,18,26,.72); backdrop-filter: blur(18px);
+            animation: rise-in .7s .08s ease both;
+        }
+        .nav-brand { padding-left: 8px; color: var(--text); font-family: 'Space Grotesk',sans-serif; font-weight: 700; }
+        .navigation ul { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
+        .navigation a {
+            display: inline-block; padding: 9px 13px; border-radius: 9px;
+            color: var(--muted); font-size: .9rem; text-decoration: none;
+            transition: color 180ms ease, background 180ms ease;
+        }
+        .navigation a:hover, .navigation a:focus-visible { background: rgba(255,255,255,.07); color: var(--accent); }
+
+        .portfolio-layout {
+            display: grid; grid-template-columns: minmax(0,.92fr) minmax(0,1.08fr);
+            gap: 26px; align-items: start; padding-bottom: 52px;
+        }
+        .sidebar { display: flex; min-width: 0; flex-direction: column; gap: 22px; }
+        .identity-card, .about-me, .game-card {
+            position: relative; overflow: hidden; border: 1px solid var(--line);
+            border-radius: 20px; background: var(--panel);
+            box-shadow: 0 18px 55px rgba(0,0,0,.16); backdrop-filter: blur(18px);
+        }
+        .identity-card {
+            padding: clamp(25px,4vw,42px); text-align: center;
+            animation: rise-in .75s .12s ease both;
+        }
+        .identity-card::before {
+            content: ""; position: absolute; top: 0; left: 12%; width: 76%; height: 1px;
+            background: linear-gradient(90deg,transparent,var(--accent),transparent); opacity: .8;
+        }
+   .developer-icon {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid var(--accent);
+    transition: transform 0.3s ease;
+}
+
+.developer-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.identity-card:hover .developer-icon {
+    transform: translateY(-3px);
+}
+        .identity-card:hover .developer-icon { transform: rotate(0) translateY(-3px); border-radius: 50%; }
+        .identity-card h2 {
+            margin: 0; font-family: 'Space Grotesk',sans-serif;
+            font-size: clamp(2rem,4vw,2.7rem); letter-spacing: -.055em; line-height: 1.2;
+        }
+        .developer-role { margin: 10px 0 0; color: var(--accent); font-size: .74rem; font-weight: 700; letter-spacing: .17em; }
+        .developer-description { max-width: 410px; margin: 20px auto 0; color: #b7c1cf; line-height: 1.8; }
+        .social-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 9px; margin-top: 25px; }
+        .social-links a {
+            display: inline-flex; align-items: center; justify-content: center;
+            padding: 10px 15px; border: 1px solid var(--line); border-radius: 10px;
+            background: rgba(255,255,255,.035); color: var(--text); font-size: .88rem;
+            font-weight: 600; text-decoration: none;
+            transition: transform 180ms ease,border-color 180ms ease,background 180ms ease;
+        }
+        .social-links a:hover {
+            transform: translateY(-3px); border-color: rgba(163,255,111,.45);
+            background: rgba(163,255,111,.08);
+        }
+
+        .about-me { padding: clamp(23px,3vw,34px); animation: rise-in .75s .2s ease both; }
+        .section-label {
+            margin: 0 0 8px; color: var(--accent); font-size: .72rem; font-weight: 700;
+            letter-spacing: .16em; text-transform: uppercase;
+        }
+        .about-me h2, .projects-heading h2 {
+            margin: 0; font-family: 'Space Grotesk',sans-serif;
+            font-size: clamp(1.65rem,3vw,2.15rem); letter-spacing: -.045em; line-height: 1.2;
+        }
+        .about-me p { color: #b7c1cf; line-height: 1.85; }
+        .about-me p:last-child { margin-bottom: 0; }
+        .about-me a { color: var(--accent); font-weight: 600; text-decoration: none; text-underline-offset: 4px; }
+        .about-me a:hover { text-decoration: underline; }
+
+        .projects-column { min-width: 0; animation: rise-in .75s .18s ease both; }
+        .projects-heading { margin-bottom: 21px; padding: 8px 2px 0; }
+        .projects-heading > p:last-child { margin: 10px 0 0; color: var(--muted); }
+        .games-container { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 17px; }
+        .game-card {
+            display: flex; min-width: 0; flex-direction: column; padding: 13px;
+            transition: transform 220ms ease,border-color 220ms ease,box-shadow 220ms ease;
+        }
+        .game-card:hover {
+            transform: translateY(-5px); border-color: rgba(163,255,111,.42);
+            box-shadow: 0 22px 50px rgba(0,0,0,.26),0 0 28px rgba(163,255,111,.045);
+        }
+        .game-image {
+            position: relative; display: flex; align-items: center; justify-content: center;
+            min-height: 145px; overflow: hidden; border: 1px solid rgba(255,255,255,.07);
+            border-radius: 13px;
+            background: radial-gradient(ellipse at 50% 120%,rgba(163,255,111,.15),transparent 58%),
+                        linear-gradient(145deg,#1a2632,#10151d 65%);
+            color: var(--accent); font-family: 'Space Grotesk',sans-serif;
+            font-size: 2.4rem; font-weight: 700; letter-spacing: -.07em;
+        }
+        .game-image::after {
+            content: ""; position: absolute; inset: 0;
+            background: linear-gradient(115deg,transparent 25%,rgba(255,255,255,.055) 45%,transparent 65%);
+            transform: translateX(-120%); transition: transform 550ms ease;
+        }
+        .game-card:hover .game-image::after { transform: translateX(120%); }
+        .game-card h3 { margin: 16px 5px 5px; font-family: 'Space Grotesk',sans-serif; font-size: 1.12rem; letter-spacing: -.025em; }
+        .game-card p { flex-grow: 1; margin: 5px; color: var(--muted); font-size: .91rem; line-height: 1.7; }
+        .game-button {
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            margin-top: 17px; padding: 11px 14px; border: 1px solid rgba(163,255,111,.22);
+            border-radius: 10px; background: rgba(163,255,111,.08); color: var(--accent);
+            font-size: .88rem; font-weight: 700; text-decoration: none;
+            transition: color 180ms ease,background 180ms ease,border-color 180ms ease;
+        }
+        .game-button::after { content: "↗"; transition: transform 180ms ease; }
+        .game-button:hover { border-color: var(--accent); background: var(--accent); color: #0b110a; }
+        .game-button:hover::after { transform: translate(2px,-2px); }
+
+        footer { border-top: 1px solid var(--line); padding: 24px 15px 32px; color: #778397; font-size: .88rem; text-align: center; }
+
+        @media (max-width: 900px) {
+            .site-shell { padding-right: 22px; padding-left: 22px; }
+            .portfolio-layout { grid-template-columns: 1fr; }
+            .identity-card { padding: 32px; }
+            .games-container { grid-template-columns: repeat(2,minmax(0,1fr)); }
+        }
+        @media (max-width: 540px) {
+            .site-shell { padding-right: 15px; padding-left: 15px; }
+            .header { padding-top: 36px; }
+            .navigation { align-items: flex-start; flex-direction: column; }
+            .navigation ul { width: 100%; }
+            .navigation a { padding-left: 9px; padding-right: 9px; }
+            .games-container { grid-template-columns: 1fr; }
+            .game-image { min-height: 130px; }
+            .identity-card { padding: 27px 19px; }
+            .about-me { padding: 23px; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                scroll-behavior: auto !important;
+                animation-duration: .01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: .01ms !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="header">
+        <h1>Ron | Game Developer</h1>
+        <p>Creating games and bringing ideas to life.</p>
+    </header>
+
+
+    <main>
+        <div class="portfolio-layout">
+
+            <!-- LEFT COLUMN -->
+
+            <aside class="sidebar">
+
+                <section class="identity-card">
+                    <div class="developer-icon">
+    <img src="brian-moser.gif" alt="Brian Moser">
+</div>
+
+                    <h2>Ron</h2>
+
+                    <p class="developer-role">INDIE GAME DEVELOPER</p>
+
+                    <p class="developer-description">
+                        I create browser games, experiment with new ideas
+                        and build projects that people can enjoy playing.
+                    </p>
+
+                    <div class="social-links" id="contact">
+
+                        <a href="https://github.com/crypticfn2012-jpg" target="_blank"
+                           rel="noopener noreferrer">GitHub</a>
+
+                        <a href="https://www.youtube.com/@Ron.1v1" target="_blank"
+                           rel="noopener noreferrer">YouTube</a>
+
+                        <a href="https://discord.gg/FSyQ3DUmQ" target="_blank"
+                           rel="noopener noreferrer">Discord</a>
+                    </div>
+                </section>
+
+                <section class="about-me" id="about-me">
+                    <h2>About Me</h2>
+
+                    <p>
+                        Hey, I'm Ron! I'm an indie game developer who enjoys
+                        creating browser games and turning ideas into playable
+                        projects.
+                    </p>
+
+                    <p>
+                        I work on different types of games, from multiplayer
+                        experiences to smaller arcade-style projects. I'm
+                        always learning new things and looking for ways to
+                        improve my games.
+                    </p>
+
+
+                    <p>
+                        I also publish games on
+                        <a class="Crazygames"
+                           href="https://www.crazygames.com/"
+                           target="_blank"
+                           rel="noopener noreferrer">CrazyGames</a>.
+                    </p>
+
+                    <p>One of my biggest dreams is to create a game that reaches millions of people and brings joy to everyone who plays it. I love watching game development videos on YouTube, learning how games are made and discovering new ideas that inspire me to keep creating.</p>
+
+                    <p>Two of my biggest inspirations are <a href="https://www.youtube.com/@Danidev" target="_blank" rel="noopener noreferrer">Dani</a> and the <a href="shutdown.html" target="_blank" rel="noopener noreferrer">JustPlay.LOL team</a>. Dani was the first person who introduced me to game development, and from the moment I discovered his videos, I was hooked. He made me realise just how exciting creating games could be. The JustPlay.LOL team also inspired me through <b>1v1.LOL</b>, one of my favourite Unity-based browser games.</p>
+
+                    <p>One day, I'd love to create my own games and make content that inspires the next generation of developers, just like the creators who inspired me. I want to prove that you can start with an idea, keep learning, and eventually create something that people genuinely love playing.</p>
+                </section>
+
+            </aside>
+
+            <!-- RIGHT COLUMN -->
+
+            <section class="projects-column" id="my-games">
+
+                <div class="projects-heading">
+                    <h2>My Games</h2>
+                    <p>Check out some of the games I've made.</p>
+                </div>
+
+                <div class="games-container">
+
+                    <article class="game-card">
+                        <div class="game-image">PR</div>
+
+                        <h3>PixelRoyal</h3>
+
+                        <p>
+                            Drop into battle, collect weapons and fight
+                            your way to victory in my multiplayer game.
+                        </p>
+
+                        <a class="game-button"
+                           href="https://crypticfn2012-jpg.github.io/PixelRoyale/"
+                           target="_blank"
+                           rel="noopener noreferrer">Play Game</a>
+                    </article>
+
+                    <article class="game-card">
+                        <div class="game-image">SS</div>
+
+                        <h3>StackShift</h3>
+
+                        <p>
+                            Test your timing and build your stack in
+                            this arcade-style browser game.
+                        </p>
+
+                        <a class="game-button"
+                           href="https://crypticfn2012-jpg.github.io/StackShift/"
+                           target="_blank"
+                           rel="noopener noreferrer">Play Game</a>
+                    </article>
+
+                    <article class="game-card">
+                        <div class="game-image">SS</div>
+
+                        <h3>Stickman Showdown</h3>
+
+                        <p>
+                            Jump into a stickman adventure and see
+                            what you can achieve.
+                        </p>
+
+                        <a class="game-button"
+                           href="https://crypticfn2012-jpg.github.io/StickmanPixelForge/"
+                           target="_blank"
+                           rel="noopener noreferrer">Play Game</a>
+                    </article>
+
+                     <article class="game-card">
+                        <div class="game-image">KP</div>
+
+                        <h3>KeyPress</h3>
+
+                        <p>
+                            An early game I made: a simple idle clicker where you repeatedly press a key to rack up points. It was one of my first projects, so it’s a little rough around the edges, but it was a fun way to start learning game development!
+                        </p>
+
+                        <a class="game-button"
+                           href="https://crypticfn2012-jpg.github.io/KeyPress/"
+                           target="_blank"
+                           rel="noopener noreferrer">Play Game</a>
+                    </article>
+
+
+                </div>
+
+            </section>
+
+            </div>
+        </main>
+
+        <footer>
+            Designed and built by Ron.
+        </footer>
+    </div>
+</body>
+</html>
